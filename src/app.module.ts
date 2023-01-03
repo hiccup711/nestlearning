@@ -1,32 +1,25 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { HdService } from './hd.service';
-import { DevService } from './dev.service';
-import { config } from 'dotenv';
-import * as path from 'path';
-import { developmentConfig } from './config/development.config';
-import { productionConfig } from './config/production.config';
 import { DbService } from './db.service';
-config({
-  path: path.join(__dirname, '../.env'),
-});
+import { AppConfig, SelectService } from './config.service';
+import { HdModule } from './hd/hd.module';
+import { T1Module } from './t1/t1.module';
 
-const selectService = {
-  provide: 'AutoService',
-  useClass: process.env.NODE_ENV == 'development' ? DevService : HdService,
-};
-
-const appConfig = {
-  provide: 'AppConfig',
-  useValue:
-    process.env.NODE_ENV == 'development'
-      ? developmentConfig
-      : productionConfig,
-};
 @Module({
-  imports: [],
+  imports: [HdModule, T1Module],
   controllers: [AppController],
-  providers: [AppService, selectService, appConfig, DbService],
+  providers: [
+    AppService,
+    SelectService,
+    AppConfig,
+    {
+      provide: 'DbService',
+      inject: ['AppConfig'],
+      useFactory(appConfig) {
+        return new DbService(appConfig.dbConfig);
+      },
+    },
+  ],
 })
 export class AppModule {}

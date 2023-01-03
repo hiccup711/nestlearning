@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AppConfigType } from './types/AppConfigType';
+import { DbService } from './db.service';
 
 @Injectable()
 export class AppService {
@@ -8,6 +9,8 @@ export class AppService {
     private readonly hd,
     @Inject('AppConfig')
     private readonly appConfig: AppConfigType,
+    @Inject('DbService')
+    private readonly dbService: DbService,
   ) {}
   getHello(): string {
     return 'Hello World!';
@@ -19,5 +22,9 @@ export class AppService {
 
   getAutoService(): string {
     return this.hd.get();
+  }
+
+  getDb(): string {
+    return this.dbService.connect();
   }
 }

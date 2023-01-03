@@ -19,4 +19,9 @@ export class AppController {
   getAppName(): string {
     return this.appService.getAppName();
   }
+
+  @Get('dbconnect')
+  getDbConnect(): string {
+    return this.appService.getDb();
+  }
 }
